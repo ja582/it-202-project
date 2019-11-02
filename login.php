@@ -17,9 +17,15 @@ if(isset($_POST['submitButton'])){
         $results = $stmt->fetch(PDO::FETCH_ASSOC);
         echo "<pre>" . var_export($results, true) . "</pre>";
 
-        $_SESSION['username'] = $uname;
-        $_SESSION['is_logged_in'] = true;
-        header("Location: home.php");
+        $countArrays = count($results);
+
+        if ($countArrays > 0){
+            $_SESSION['username'] = $uname;
+            echo "arrays counted";
+            header("Location: home.php");
+        }else{
+            echo "wrong! you lose!";
+        }
     }else{
         echo "Invalid username and password";
     }
