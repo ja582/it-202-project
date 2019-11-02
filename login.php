@@ -17,14 +17,11 @@ if(isset($_POST['submitButton'])){
         $results = $stmt->fetch(PDO::FETCH_ASSOC);
         echo "<pre>" . var_export($results, true) . "</pre>";
 
-        $countArrays = count($results);
-
-        if ($countArrays > 0){
+        if($results['username'] == $uname && $results['password'] == $pword){
             $_SESSION['username'] = $uname;
-            echo "arrays counted";
             header("Location: home.php");
         }else{
-            echo "wrong! you lose!";
+            echo "not a valid username or password";
         }
     }else{
         echo "Invalid username and password";
@@ -70,7 +67,6 @@ if(isset($_POST['submitButton'])){
 </head>
 <body class="text-center">
 <form class="form-signin" method="POST" action="#">
-    <img class="mb-4" src="/docs/4.3/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
     <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
     <input name="username" type="text" class="form-control" placeholder="Username" required autofocus/>
     <input name="password" type="password" class="form-control" placeholder="Password" required/>
