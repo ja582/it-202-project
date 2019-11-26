@@ -1,39 +1,3 @@
-<?php
-ini_set('display_errors',1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-session_start();
-
-require("config.php");
-$conn_string = "mysql:host=$host;dbname=$database;charset=utf8mb4";
-if(isset($_POST['submitButton'])){
-    try{
-        $uname = $_POST['username'];
-        $pword = $_POST['password'];
-        $db = new PDO($conn_string, $username, $password);
-        if ($uname != "" && $pword != ""){
-            $quest = "select id, username, password from `Users` where username = :username LIMIT 1";
-            $stmt = $db->prepare($quest);
-            $r = $stmt->execute(array(":username"=> $uname));
-            $results = $stmt->fetch(PDO::FETCH_ASSOC);
-            var_dump($results);
-            if($results && count($results) > 0){
-                $userSes = array("id"=> $results['id'], "name"=> $results['username'], "balance"=> $results['bal']);
-                $_SESSION['user'] = $userSes;
-                echo var_export($uname, true);
-                header("Location: dashboard.php");
-            }
-            echo "<pre>" . var_export($results, true) . "</pre>";
-        }else{
-            echo "Invalid username and password";
-        }
-    }
-    catch(Exception $e){
-        echo $e->getMessage();
-    }
-}
-?>
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -42,7 +6,7 @@ if(isset($_POST['submitButton'])){
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Jekyll v3.8.5">
-    <title>Login</title>
+    <title>Registration</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/4.3/examples/sign-in/">
 
@@ -71,11 +35,45 @@ if(isset($_POST['submitButton'])){
 </head>
 <body class="text-center">
 <form class="form-signin" method="POST" action="#">
-    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+    <h1 class="h3 mb-3 font-weight-normal">Registration</h1>
     <input name="username" type="text" class="form-control" placeholder="Username" required autofocus/>
     <input name="password" type="password" class="form-control" placeholder="Password" required/>
+    <input name="confirmPassword" type="password" class="form-control" placeholder="Confirm Password" required/>
     <input type="submit" value="Submit" name="submitButton" id="submitButton"/>
     <p class="mt-5 mb-3 text-muted">&copy; 2019</p>
 </form>
 </body>
 </html>
+
+<?php
+ini_set('display_errors',1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+require("config.php");
+
+if(isset($_POST['submitButton'])){
+    $uname = $_POST['username'];
+    $pword = $_POST['password'];
+    $confirm = $_POST['confirmPassword'];
+    if($pword != $confirm)
+    {
+        echo "Passwords dont match";
+        exit();
+    }
+    $conn_string = "mysql:host=$host;dbname=$database;charset=utf8mb4";
+
+    $db = new PDO($conn_string, $username, $password);
+    if ($uname != "" && $pword != ""){
+        $hash = password_hash($pword, PASSWORD_BCRYPT);
+        $quest ="INSERT into `Users` (`username`, `password`, `bal`) VALUES(:username, :password, 100)";
+        $stmt = $db->prepare($quest);
+        $r = $stmt->execute(array(":username"=> $uname, ":password"=> $hash));
+        //print_r($stmt->errorInfo());
+        header("Location: login.php");
+    }else{
+        echo "Nothing entered";
+    }
+
+}
+?>
