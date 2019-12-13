@@ -6,19 +6,24 @@ session_start();
 
 require("config.php");
 $conn_string = "mysql:host=$host;dbname=$database;charset=utf8mb4";
+
+if(isset($_SESSION['user']['name'])){
+    header("Location: dashboard.php");
+}
+
 if(isset($_POST['submitButton'])){
     try{
         $uname = $_POST['username'];
         $pword = $_POST['password'];
         $db = new PDO($conn_string, $username, $password);
         if ($uname != "" && $pword != ""){
-            $quest = "select id, username, password from `Users` where username = :username LIMIT 1";
+            $quest = "select id, username, password, bal from `Users` where username = :username LIMIT 1";
             $stmt = $db->prepare($quest);
             $r = $stmt->execute(array(":username"=> $uname));
             $results = $stmt->fetch(PDO::FETCH_ASSOC);
             var_dump($results);
             if($results && count($results) > 0){
-                $userSes = array("id"=> $results['id'], "name"=> $results['username'], "balance"=> $results['bal']);
+                $userSes = array("id"=> $results['id'], "name"=> $results['username'], "bal"=> $results['bal']);
                 $_SESSION['user'] = $userSes;
                 echo var_export($uname, true);
                 header("Location: dashboard.php");
@@ -32,6 +37,10 @@ if(isset($_POST['submitButton'])){
         echo $e->getMessage();
     }
 }
+
+
+
+
 ?>
 
 <!doctype html>

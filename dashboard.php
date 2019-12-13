@@ -1,16 +1,15 @@
 <?php
 session_start();
-include_once("blade/functions.php");
+include_once("blade/header.php");
 ?>
-<html>
-<head></head>
-<body>
-Hello, <?php get_username();?>!!!!!!!!
-Balance is: <?php get_balance();?>
+<head>
+    <title><?php echo $lang['title_dash']; ?></title>
+</head>
+
+
 <br>
-<a href="gameroom.php" />play rock paper scissors</a><br><a href="manage.php" />balance management</a>
+<a href="gameroom.php"><?php echo $lang['gotogame']; ?></a><br><a href="records.php"><?php echo $lang['gotorec']; ?></a><br><a href="leaderboard.php"><?php echo $lang['gotolb'] ?></a><br><a href="logout.php"><?php echo $lang['logout']; ?></a>
 
-
-
-</body>
-</html>
+<?php
+include_once("blade/footer.php");
+?>
